@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.List;
 
@@ -16,14 +17,18 @@ public class ImageSlider extends ViewPager {
 
     private Context mContext;
     private List<String> mImageUrlList;
+    private Boolean crop;
+    private Boolean zoom;
 
     public ImageSlider(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
-    public void setImageUrlList(List<String> imageUrlList) {
+    public void setImageUrlList(List<String> imageUrlList, Boolean needCrop, Boolean needZoom) {
         mImageUrlList = imageUrlList;
+        crop = needCrop;
+        zoom = needZoom;
         setAdapter(new ImagePagerAdapter());
     }
 
@@ -38,14 +43,37 @@ public class ImageSlider extends ViewPager {
         }
 
         public Object instantiateItem(ViewGroup container, int position) {
-            ImageView imageView = new ImageView(mContext);
-            Glide.with(mContext)
-                    .load(mImageUrlList.get(position))
-                    .centerCrop()
-                    .into(imageView);
-
-            container.addView(imageView);
-            return imageView;
+            if (zoom){
+                PhotoView imageView = new PhotoView(mContext);
+                if (crop){
+                    Glide.with(mContext)
+                            .load(mImageUrlList.get(position))
+                            .centerCrop()
+                            .into(imageView);
+                } else {
+                    Glide.with(mContext)
+                            .load(mImageUrlList.get(position))
+                            .fitCenter()
+                            .into(imageView);
+                }
+                container.addView(imageView);
+                return imageView;
+            } else {
+                ImageView imageView = new ImageView(mContext);
+                if (crop){
+                    Glide.with(mContext)
+                            .load(mImageUrlList.get(position))
+                            .centerCrop()
+                            .into(imageView);
+                } else {
+                    Glide.with(mContext)
+                            .load(mImageUrlList.get(position))
+                            .fitCenter()
+                            .into(imageView);
+                }
+                container.addView(imageView);
+                return imageView;
+            }
         }
 
         @Override
